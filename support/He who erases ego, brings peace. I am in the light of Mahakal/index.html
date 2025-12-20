@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kranti Matrix - need your support</title>
+    <link rel="stylesheet" href="https://krantimatrix.pages.dev/tooplate-titan-style.css">
+<!--
+
+Tooplate 2147 Titan Folio
+
+https://www.tooplate.com/view/2147-titan-folio
+
+Free HTML CSS Template
+
+-->
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">Kranti Matrix</div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#timeline">Journey</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="mobile-nav" id="mobileNav">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#timeline">Journey</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+   <section id="portfolio" class="fade-in">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Work</h2>
+         
+
+<div style="background-color: #12121b; padding: 0px; font-family: sans-serif; color: white; border-radius: 20px;">
+    
+   
+
+    <div style="background-color: #1e1e26; border-radius: 20px; overflow: hidden; border: 1px solid #333; max-width: 800px; margin: 0 auto;">
+        
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+            <iframe 
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                src="https://youtube.com/embed/HXH8bMXNbTw?si=KDOaC7czUHqlEvWo" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div style="padding: 25px;">
+            <h3 style="font-size: 22px; margin-bottom: 10px;">Cinematic Spiritual Shorts</h3>
+            <p style="color: #b0b0b0; line-height: 1.6; font-size: 16px;">
+                A visually stunning short-form video featuring high-quality effects, rhythmic synchronization, and cinematic storytelling. This project showcases advanced editing techniques to create an immersive spiritual experience for the audience.
+            </p>
+        </div>
+    </div>
+</div>
+
+</br></br>
+
+<style>
+/* Design for Kranti Matrix Dark Theme */
+.matrix-share-container {
+    position: relative;
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    margin: 20px;
+}
+
+.matrix-share-trigger {
+    background: #3b82f6; /* লোগোর নীল রঙ */
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    transition: 0.3s;
+}
+
+.matrix-share-trigger:hover { transform: translateY(-3px); background: #2563eb; }
+
+/* Pulse Animation */
+.pulse-ring {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50px;
+    border: 2px solid #3b82f6;
+    animation: matrix-pulse 2s infinite;
+}
+
+@keyframes matrix-pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+
+.matrix-share-card {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(15px);
+    background: #1a1a24;
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 15px;
+    width: 260px;
+    display: none;
+    opacity: 0;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    z-index: 1000;
+}
+
+.matrix-share-card.active {
+    display: block;
+    animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+.share-header {
+    color: #888;
+    text-align: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.share-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.share-box {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.share-box span { color: #b0b0b0; font-size: 12px; }
+
+.icon-circle {
+    width: 48px; height: 48px;
+    background: #2d2d39;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: 0.3s;
+}
+
+/* Hover Effects */
+.share-box:hover .icon-circle { transform: translateY(-3px); color: white; }
+.wa:hover { background: #25D366 !important; }
+.fb:hover { background: #1877F2 !important; }
+.ig:hover { background: #E4405F !important; }
+.cp:hover { background: #6b7280 !important; }
+</style>
+
+<div class="matrix-share-container">
+    <button class="matrix-share-trigger" id="mainShareBtn">
+        <div class="pulse-ring"></div>
+        <span class="icon">🚀</span> Share Content
+    </button>
+    
+    <div class="matrix-share-card" id="shareMenuCard">
+        <div class="share-header">Share this Work</div>
+        <div class="share-grid">
+            
+            <a href="#" id="wa-share" target="_blank" class="share-box">
+                <div class="icon-circle wa">💬</div>
+                <span>WhatsApp</span>
+            </a>
+
+            <a href="#" id="fb-share" target="_blank" class="share-box">
+                <div class="icon-circle fb">📘</div>
+                <span>Facebook</span>
+            </a>
+
+            <div onclick="instaAction()" class="share-box" style="cursor:pointer;">
+                <div class="icon-circle ig">📸</div>
+                <span>Instagram</span>
+            </div>
+
+            <div onclick="copyLinkAction()" class="share-box" style="cursor:pointer;">
+                <div class="icon-circle cp">📋</div>
+                <span>Copy Link</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// ১. এখানে আপনার ভিডিও বা কন্টেন্টের লিঙ্কটি বসান (ব্র্যাকেট ছাড়া)
+const myContentLink = "https://youtube.com/shorts/HXH8bMXNbTw?si=wyt2dYJwbZYZP0F2"; 
+
+// ২. শেয়ার করার সময় যে লেখাটি যাবে
+const shareText = "Check out this amazing content by Kranti Matrix!";
+
+const shareBtn = document.getElementById('mainShareBtn');
+const shareCard = document.getElementById('shareMenuCard');
+
+// লিঙ্কগুলো সেট করা
+document.getElementById('wa-share').href = `https://wa.me/?text=${encodeURIComponent(shareText + " " + myContentLink)}`;
+document.getElementById('fb-share').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(myContentLink)}`;
+
+function instaAction() {
+    navigator.clipboard.writeText(myContentLink);
+    alert("Content Link Copied! Now you can share it on Instagram.");
+    window.open("https://www.instagram.com/", "_blank");
+}
+
+function copyLinkAction() {
+    navigator.clipboard.writeText(myContentLink).then(() => {
+        alert("Link Copied!");
+    });
+}
+
+// Menu Toggle
+shareBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    shareCard.classList.toggle('active');
+});
+document.addEventListener('click', () => shareCard.classList.remove('active'));
+</script>
+
+<style>
+/* আগের CSS কোডটিই কাজ করবে, তাই সেটি এখানে আর লিখলাম না */
+/* তবে নিশ্চিত করুন আগের CSS ফাইল বা স্টাইল ট্যাগটি আপনার ফাইলে আছে */
+</style>
+
+      
+            </div>
+<center>
+
+</center>
+                
+<div id="container-16b0a2e206de179bc35e0b522afeda0f"></div>
+
+        </div>
+    </section>
+
+    <section id="contact" class="fade-in">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Let's Create Together</h2>
+                <p class="section-subtitle">Ready to bring your ideas to life? Let's start a conversation</p>
+            </div>
+
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <p>I'm always excited to work on new projects and collaborate with amazing people. Whether you have a specific project in mind or just want to explore possibilities, I'd love to hear from you.</p>
+                    
+                    <div class="contact-details">
+                        <h4>💼 Available for:</h4>
+                        <ul>
+                            <li>Freelance Video Projects</li>
+                            <li>Custom Beat Production</li>
+                            <li>Content Strategy & Marketing</li>
+                            <li>Collaborations & Workshops</li>
+                        </ul>
+                    </div>
+
+                    <div class="contact-details">
+                        <h4>📍 Based in:</h4>
+                        <p>Digital Space (Global Services)</p>
+                    </div>
+                </div>
+
+
+
+<form action="https://formsubmit.co/9366c47dd310b1da1d70597731cb278f" method="POST" class="form-group">
+     <div class="form-group mb-3">
+       
+
+
+
+
+
+
+                <div class="contact-form-container">
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="name"id="name" class="form-input" placeholder="Name" required>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="email" id="email" class="form-input" name="email" placeholder="Email" required>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="text" id="_subject" class="form-input" name="_subject" placeholder="Subject" required>
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <textarea class="form-textarea" rows="5" id="message" name="msg" placeholder="Tell me about your project..." required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                © 2025 Titan Folio. All rights reserved.
+            </p>
+ 
+        </div>
+    </footer>
+
+    <script src="https://krantimatrix.pages.dev/tooplate-titan-script.js"></script>
+<script type="text/javascript" src="https://pl28298649.effectivegatecpm.com/3d/37/ed/3d37ed0885c16dd24335547a81158e60.js"></script>
+<script async="async" data-cfasync="false" src="https://pl28298635.effectivegatecpm.com/16b0a2e206de179bc35e0b522afeda0f/invoke.js"></script>
+
+</body>
+</html>
