@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Gift - Kranti Matrix</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; min-height: 100vh; overflow-x: hidden; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; color: #fff; }
+        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        .light-strip { position: fixed; top: 0; width: 100%; height: 20px; display: flex; justify-content: space-around; z-index: 1001; }
+        .light-bulb { width: 12px; height: 12px; border-radius: 50%; animation: flash 1s infinite alternate; }
+        @keyframes flash { 0% { opacity: 0.4; box-shadow: 0 0 2px white; } 100% { opacity: 1; box-shadow: 0 0 10px white; } }
+
+        /* এন্ট্রান্স কার্টেন */
+        #curtain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #b30000, #4a0000); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .name-input { padding: 15px; width: 250px; border-radius: 50px; border: none; margin-bottom: 20px; text-align: center; font-size: 1.1rem; outline: none; }
+
+        /* মেইন স্টেজ */
+        .main-stage { text-align: center; padding: 40px 20px; width: 100%; max-width: 800px; z-index: 100; }
+        .logo-text { font-size: 2.8rem; color: #ffcf00; text-shadow: 0 0 20px #ff0000; }
+        .sender-display { font-size: 1.2rem; color: #fff; margin-bottom: 10px; font-style: italic; }
+        .tv-frame { width: 100%; aspect-ratio: 16/9; background: #333; border-radius: 20px; padding: 10px; position: relative; box-shadow: 0 0 40px rgba(255, 0, 0, 0.5); border: 5px solid #444; animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .screen { width: 100%; height: 100%; background: #000; border-radius: 10px; overflow: hidden; }
+
+        /* Buttons & Inputs */
+        .btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin: 5px; }
+        .open-btn { background: #ffcf00; color: #000; }
+        .wa-btn { background: #25d366; color: #fff; font-size: 1.1rem; }
+        
+        /* Social Icons */
+        .social-links { margin-top: 30px; display: flex; justify-content: center; gap: 20px; }
+        .social-links a { color: #fff; font-size: 1.5rem; transition: 0.3s; }
+        .social-links a:hover { color: #ffcf00; transform: scale(1.2); }
+
+        /* Popup Box */
+        #sharePopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; padding: 25px; border-radius: 20px; z-index: 3000; border: 2px solid #ffcf00; width: 90%; max-width: 400px; text-align: center; }
+        .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2999; }
+        #sharePopup input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none; }
+
+        /* Music Option */
+        .music-option { margin-top: 20px; font-size: 0.8rem; opacity: 0.7; }
+        .music-option input { background: #333; border: 1px solid #555; color: #fff; padding: 5px; border-radius: 5px; width: 200px; }
+        
+        /* নতুন মেসেজ বক্স ডিজাইন */
+.sender-message-box {
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 5px solid #ffcf00;
+    padding: 15px;
+    margin: 20px auto;
+    border-radius: 10px;
+    max-width: 90%;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    display: none;
+    /* শুরুতে লুকানো থাকবে */
+}
+
+.sender-label {
+    color: #ffcf00;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.sender-content {
+    color: #fff;
+    font-size: 1.1rem;
+}
+    </style>
+</head>
+<body>
+
+    <div class="light-strip" id="lights"></div>
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="popup-overlay" id="overlay"></div>
+    <div id="sharePopup">
+        <h3>শেয়ার সেটিংস 🎁</h3>
+        <input type="text" id="fromName" placeholder="আপনার নাম (প্রেরক)">
+        <input type="text" id="toName" placeholder="বন্ধুর নাম (প্রাপক)">
+        <button class="btn wa-btn" onclick="finalShare()">হোয়াটসঅ্যাপে পাঠান <i class="fab fa-whatsapp"></i></button>
+        <button class="btn" onclick="closePopup()" style="background:#555; color:#fff;">বন্ধ করুন</button>
+    </div>
+
+    <div id="curtain">
+        <h2 id="curtainTitle">🎄 Kranti Matrix 🎄<br>আপনার জন্য একটি বিশেষ উপহার আছে!</h2>
+        <input type="text" id="userInput" class="name-input" placeholder="আপনার নাম লিখুন...">
+        <button class="btn open-btn" onclick="startExperience()">উপহারটি দেখুন 🎁</button>
+    </div>
+
+    <div class="main-stage">
+        <div class="logo-text">Kranti Matrix</div>
+        <div id="senderNameDisplay" class="sender-message-box">
+    <span class="sender-label">প্রেরক:</span>
+    <span class="sender-content" id="nameText"></span>
+</div>
+
+        
+        <div class="tv-frame">
+            <div class="screen">
+                <div id="player"></div>
+            </div>
+        </div>
+
+        <button class="btn wa-btn" onclick="openSharePopup()">🚀 বন্ধুদের সারপ্রাইজ দিন</button>
+
+        <div class="social-links">
+            <a href="https://facebook.com/yourlink" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://instagram.com/yourlink" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://youtube.com/yourlink" target="_blank"><i class="fab fa-youtube"></i></a>
+        </div>
+
+        <div class="music-option">
+            গান পরিবর্তন করুন (অডিও লিংক): <br>
+            <input type="text" id="bgMusicLink" placeholder="Paste .mp3 link here" onchange="updateMusic()">
+        </div>
+        <audio id="customAudio" loop></audio>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // ১. স্নো এবং লাইট জেনারেটর (আগের মতোই)
+        const lightStrip = document.getElementById('lights');
+        const colors = ['#ff0000', '#00ff00', '#ffcf00', '#0000ff', '#ff00ff'];
+        for(let i=0; i<30; i++) {
+            let bulb = document.createElement('div');
+            bulb.className = 'light-bulb';
+            bulb.style.background = colors[i % colors.length];
+            bulb.style.animationDelay = (Math.random() * 2) + 's';
+            lightStrip.appendChild(bulb);
+        }
+
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        const emojis = ['❄️', '⭐', '🎅', '🎄', '🎁'];
+        function init() {
+            width = window.innerWidth; height = window.innerHeight;
+            canvas.width = width; canvas.height = height;
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({ x: Math.random() * width, y: Math.random() * height, type: Math.random() > 0.8 ? emojis[Math.floor(Math.random()*emojis.length)] : 'dot', size: Math.random() * 15 + 10, speed: Math.random() * 1.5 + 0.5 });
+            }
+        }
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            for (let p of particles) {
+                if(p.type === 'dot') { ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fill(); }
+                else { ctx.font = p.size + "px Arial"; ctx.fillText(p.type, p.x, p.y); }
+                p.y += p.speed; if(p.y > height) p.y = -20;
+            }
+            requestAnimationFrame(draw);
+        }
+
+        // ২. ডাইনামিক মিউজিক ও ভিডিও
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%', width: '100%',
+                videoId: 'f9B6uJmGfRE', // Jingle Bells Instrumental
+                playerVars: { 'autoplay': 0, 'controls': 1 },
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+
+        function onPlayerReady() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const n = urlParams.get('n'); // প্রেরক
+    
+    if(n) {
+        const senderBox = document.getElementById('senderNameDisplay');
+        const nameText = document.getElementById('nameText');
+        
+        // নাম সেট করা এবং বক্সটি প্রদর্শন করা
+        nameText.innerText = decodeURIComponent(n);
+        senderBox.style.display = 'block'; 
+        
+        // কার্টেন এর টেক্সট পরিবর্তন
+        document.getElementById('curtainTitle').innerHTML = `🎄 <span style="color:#ffcf00">${decodeURIComponent(n)}</span> আপনার জন্য একটি বিশেষ উপহার পাঠিয়েছে! 🎄`;
+    }
+}
+
+        function updateMusic() {
+            const link = document.getElementById('bgMusicLink').value;
+            const audio = document.getElementById('customAudio');
+            if(link) { audio.src = link; audio.play(); }
+        }
+
+        function startExperience() {
+            gsap.to("#curtain", { duration: 1.2, y: "-100%", ease: "power4.inOut" });
+            player.playVideo();
+            player.setVolume(100);
+            updateMusic();
+        }
+
+        // ৩. অ্যাডভান্সড শেয়ারিং পপআপ
+        function openSharePopup() {
+            document.getElementById('sharePopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('sharePopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function finalShare() {
+            const from = document.getElementById('fromName').value || "Kranti Matrix Fan";
+            const to = document.getElementById('toName').value || "প্রিয় বন্ধু";
+            const currentUrl = window.location.href.split('?')[0];
+            const shareUrl = `${currentUrl}?n=${encodeURIComponent(from)}&t=${encodeURIComponent(to)}`;
+            
+            const text = `🎄 *${to}*, আপনার জন্য ${from}-এর পক্ষ থেকে একটি বিশেষ জাদুকরী ক্রিসমাস সারপ্রাইজ! 🎁%0A%0Aলিংকে ক্লিক করে দেখুন: ${shareUrl}`;
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+            closePopup();
+        }
+
+        window.addEventListener('resize', init);
+        init(); draw();
+    </script>
+</body>
+</html>
