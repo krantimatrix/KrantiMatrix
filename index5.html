@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Gift - Kranti Matrix</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; min-height: 100vh; overflow-x: hidden; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; color: #fff; }
+        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        .light-strip { position: fixed; top: 0; width: 100%; height: 20px; display: flex; justify-content: space-around; z-index: 1001; }
+        .light-bulb { width: 12px; height: 12px; border-radius: 50%; animation: flash 1s infinite alternate; }
+        @keyframes flash { 0% { opacity: 0.4; box-shadow: 0 0 2px white; } 100% { opacity: 1; box-shadow: 0 0 10px white; } }
+
+        /* শাইনি টেক্সট */
+        .glow-container { text-align: center; margin-bottom: 20px; }
+        .shiny-text {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 5rem; color: #fff; text-transform: capitalize;
+            text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 42px #ff0000, 0 0 82px #ff0000;
+            animation: pulsate 1.5s infinite alternate;
+        }
+        @keyframes pulsate {
+            100% { text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 40px #ffcf00, 0 0 80px #ffcf00; transform: scale(1.1); }
+        }
+
+        /* এন্ট্রান্স কার্টেন */
+        #curtain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #b30000, #4a0000); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .name-input { padding: 15px; width: 250px; border-radius: 50px; border: none; margin-bottom: 20px; text-align: center; font-size: 1.1rem; outline: none; }
+
+        /* মেইন স্টেজ */
+        .main-stage { text-align: center; padding: 40px 20px; width: 100%; max-width: 800px; z-index: 100; }
+        .tv-frame { width: 100%; aspect-ratio: 16/9; background: #333; border-radius: 20px; padding: 10px; position: relative; box-shadow: 0 0 40px rgba(255, 0, 0, 0.5); border: 5px solid #444; animation: float 4s ease-in-out infinite; margin-top: 20px; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .screen { width: 100%; height: 100%; background: #000; border-radius: 10px; overflow: hidden; }
+
+        /* নতুন মেসেজ বক্স ডিজাইন */
+        .sender-message-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 5px solid #ffcf00;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            max-width: 90%;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: left;
+            display: none; /* শুরুতে লুকানো */
+        }
+        .sender-label { color: #ffcf00; font-size: 0.9rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .sender-content { color: #fff; font-size: 1.1rem; line-height: 1.5; }
+
+        /* Buttons */
+        .btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin: 10px 5px; }
+        .open-btn { background: #ffcf00; color: #000; }
+        .wa-btn { background: #25d366; color: #fff; }
+        
+        .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2999; }
+        #sharePopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; padding: 25px; border-radius: 20px; z-index: 3000; border: 2px solid #ffcf00; width: 90%; max-width: 400px; text-align: center; }
+        #sharePopup input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px; border: none; }
+
+        @media (max-width: 600px) { .shiny-text { font-size: 3rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="light-strip" id="lights"></div>
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="popup-overlay" id="overlay"></div>
+    <div id="sharePopup">
+        <h3>শেয়ার সেটিংস 🎁</h3>
+        <input type="text" id="fromName" placeholder="আপনার নাম (প্রেরক)">
+        <input type="text" id="toName" placeholder="বন্ধুর নাম (প্রাপক)">
+        <button class="btn wa-btn" onclick="finalShare()">হোয়াটসঅ্যাপে পাঠান <i class="fab fa-whatsapp"></i></button>
+        <button class="btn" onclick="closePopup()" style="background:#555; color:#fff;">বন্ধ করুন</button>
+    </div>
+
+    <div id="curtain">
+        <h2 id="curtainTitle">🎄 Kranti Matrix 🎄<br>আপনার জন্য একটি বিশেষ উপহার আছে!</h2>
+        <input type="text" id="userInput" class="name-input" placeholder="আপনার নাম লিখুন...">
+        <button class="btn open-btn" onclick="startExperience()">উপহারটি দেখুন 🎁</button>
+    </div>
+
+    <div class="main-stage">
+        <div class="glow-container">
+            <h1 class="shiny-text">Merry Christmas</h1>
+        </div>
+
+        <div id="senderNameDisplay" class="sender-message-box">
+            <span class="sender-label">Sent By: <span id="nameText" style="color:#fff"></span></span>
+            <p class="sender-content">“এই উৎসবটি তোমার হৃদয়ে ভালোবাসা বয়ে আনুক এবং আগামী বছরটি নিরাপদে কাটুক। শুভ বড়দিন মাই লাভ“।</p>
+        </div>
+
+        <div class="tv-frame">
+            <div class="screen">
+                <div id="player"></div>
+            </div>
+        </div>
+
+        <button class="btn wa-btn" onclick="openSharePopup()">🚀 বন্ধুদের সারপ্রাইজ দিন</button>
+        <button class="btn wa-btn" style="background: #e91e63;">🚀 ভালোবাসার মানুষের জন্য ❤️</button>
+
+        <audio id="customAudio" loop>
+            <source src="https://krantimatrix.pages.dev/63vwu-l69ia.ogg" type="audio/ogg">
+        </audio>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // স্নো ও লাইট জেনারেটর
+        const lightStrip = document.getElementById('lights');
+        const colors = ['#ff0000', '#00ff00', '#ffcf00', '#0000ff'];
+        for(let i=0; i<30; i++) {
+            let bulb = document.createElement('div');
+            bulb.className = 'light-bulb';
+            bulb.style.background = colors[i % colors.length];
+            bulb.style.animationDelay = (Math.random() * 2) + 's';
+            lightStrip.appendChild(bulb);
+        }
+
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function init() {
+            width = window.innerWidth; height = window.innerHeight;
+            canvas.width = width; canvas.height = height;
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({ x: Math.random() * width, y: Math.random() * height, type: 'dot', speed: Math.random() * 1.5 + 0.5 });
+            }
+        }
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "white";
+            for (let p of particles) {
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2); ctx.fill();
+                p.y += p.speed; if(p.y > height) p.y = -20;
+            }
+            requestAnimationFrame(draw);
+        }
+
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%', width: '100%',
+                videoId: 'ZugzorDM9w', 
+                playerVars: { 'autoplay': 0, 'controls': 1 },
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+
+        function onPlayerReady() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const n = urlParams.get('n');
+            if(n) {
+                document.getElementById('senderNameDisplay').style.display = 'block';
+                document.getElementById('nameText').innerText = decodeURIComponent(n);
+                document.getElementById('curtainTitle').innerHTML = `🎄 <span style="color:#ffcf00">${decodeURIComponent(n)}</span> আপনার জন্য উপহার পাঠিয়েছে!`;
+            }
+        }
+
+        function startExperience() {
+            gsap.to("#curtain", { duration: 1.2, y: "-100%", ease: "power4.inOut" });
+            // ৫ সেকেন্ড পর শুরু
+            setTimeout(() => {
+                if (player) player.playVideo();
+                document.getElementById('customAudio').play();
+            }, 5000);
+        }
+
+        function openSharePopup() { document.getElementById('sharePopup').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
+        function closePopup() { document.getElementById('sharePopup').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+
+        function finalShare() {
+            const from = document.getElementById('fromName').value || "Kranti Matrix";
+            const to = document.getElementById('toName').value || "বন্ধু";
+            const shareUrl = `${window.location.origin}${window.location.pathname}?n=${encodeURIComponent(from)}`;
+            const text = `🎄 *${to}*, আপনার জন্য ${from}-এর পক্ষ থেকে উপহার! 🎁%0A%0Aদেখুন এখানে: ${shareUrl}`;
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        window.addEventListener('resize', init);
+        init(); draw();
+    </script>
+</body>
+</html>
