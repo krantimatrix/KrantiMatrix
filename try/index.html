@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kranti Matrix Creator Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0b0e14; --card: #161b22; --blue: #00d2ff; --red: #ff4d4d; --green: #00ff88; --text: #e6edf3; --muted: #8b949e; --purple: #a855f7;
+        }
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        .top-bar { width: 100%; max-width: 480px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card); border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 1100; }
+        .site-name { font-weight: 800; color: var(--blue); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .more-opt { cursor: pointer; color: var(--muted); padding: 5px; }
+
+        .container { width: 100%; max-width: 480px; padding: 20px; transition: filter 0.3s; }
+        .container.blur-bg { filter: blur(8px); pointer-events: none; }
+
+        .header { text-align: center; padding: 25px; background: #1c2128; border-radius: 24px; margin-bottom: 20px; border: 1px solid #30363d; width: 100%; }
+        .clock { font-size: 2.8rem; font-weight: 800; color: var(--blue); }
+
+        .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 20px; border: 1px solid #30363d; position: relative; }
+        .card-yt { border-left: 5px solid var(--red); background: linear-gradient(145deg, #161b22, #1c2128); }
+        .card-plan { border-left: 5px solid var(--green); }
+        .card-tools { border-left: 5px solid var(--purple); }
+        .card-web { border-left: 5px solid var(--blue); }
+
+        /* Dynamic YT UI */
+        .yt-profile-container { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+        .yt-thumb { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--red); padding: 2px; }
+        .yt-info { flex: 1; }
+        .yt-name { font-weight: bold; font-size: 1.1rem; color: #fff; }
+        .yt-subs { color: var(--red); font-weight: 800; font-size: 1.5rem; letter-spacing: 1px; }
+
+        /* Settings */
+        .settings-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 350px; background: var(--card); border: 1px solid var(--blue); border-radius: 24px; padding: 25px; z-index: 1200; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .popup-title { font-size: 1.1rem; font-weight: bold; color: var(--blue); margin-bottom: 20px; text-align: center; }
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 10px; background: #0d1117; border-radius: 12px; }
+        .switch { position: relative; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #30363d; border-radius: 20px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: var(--blue); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* General styles */
+        .star-input { display: flex; gap: 5px; margin-bottom: 15px; color: #ffd700; cursor: pointer; }
+        .planner-box { background: #0d1117; padding: 15px; border-radius: 16px; border: 1px solid #30363d; }
+        .input-field { background: transparent; border: none; color: white; width: 100%; padding: 10px; outline: none; border-bottom: 1px solid #30363d; font-size: 1rem; }
+        .detail-field { background: transparent; border: none; color: var(--muted); width: 100%; padding: 10px; outline: none; min-height: 80px; display: none; font-size: 0.9rem; }
+        .btn-group { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .btn { padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-blue { background: var(--blue); color: #000; }
+        .item { background: #1c2128; padding: 15px; border-radius: 18px; margin-bottom: 12px; border: 1px solid #30363d; }
+        .item-title { font-weight: bold; color: var(--blue); }
+        .actions { display: flex; gap: 12px; margin-top: 10px; justify-content: flex-end; }
+        .icon-btn { cursor: pointer; opacity: 0.8; }
+        
+        /* Toolkit Grid */
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .tool-box { background: #0d1117; padding: 12px; border-radius: 15px; border: 1px solid #30363d; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+        .section-title { font-size: 0.8rem; font-weight: bold; color: var(--purple); margin: 15px 0 5px 0; text-transform: uppercase; }
+
+        .web-item { display: flex; align-items: center; background: #0d1117; padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #30363d; cursor: pointer; }
+        .web-logo { width: 24px; height: 24px; border-radius: 4px; margin-right: 12px; }
+        .web-name { flex: 1; font-size: 0.9rem; font-weight: 500; }
+        .web-actions { display: flex; gap: 10px; opacity: 0; transition: 0.2s; }
+        .web-item:hover .web-actions { opacity: 1; }
+        
+       /* Modal styling update for scrolling */
+.modal { 
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.9); 
+    z-index: 1500; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px; 
+}
+
+.modal-content { 
+    background: var(--card); 
+    width: 100%; 
+    max-width: 400px; 
+    padding: 25px; 
+    border-radius: 24px; 
+    border: 1px solid var(--blue); 
+    /* স্ক্রলিং এর জন্য নিচের ৩টি লাইন যোগ করা হয়েছে */
+    max-height: 80vh; 
+    overflow-y: auto; 
+    position: relative;
+}
+
+        #toast { visibility: hidden; min-width: 200px; background-color: var(--blue); color: #000; text-align: center; border-radius: 10px; padding: 10px; position: fixed; z-index: 2000; bottom: 30px; font-weight: bold; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="site-name">Kranti Matrix</div>
+    <div class="more-opt" onclick="toggleSettings()"><i class="fas fa-ellipsis-v"></i></div>
+</div>
+
+<div id="toast">কপি হয়েছে!</div>
+
+<div class="container" id="mainContainer">
+    <div class="header">
+        <div class="clock" id="clock">00:00:00 AM</div>
+        <div id="fullDate" style="color:var(--muted); font-size: 0.9rem;"></div>
+    </div>
+
+    <div class="card card-yt" id="card-yt">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <span style="color:var(--red); font-weight:bold; font-size: 0.8rem;"><i class="fab fa-youtube"></i> LIVE STATUS</span>
+            <i class="fas fa-sync-alt icon-btn" onclick="updateYouTubeStats()"></i>
+        </div>
+        <div class="yt-profile-container">
+            <img id="ytPfp" src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" class="yt-thumb">
+            <div class="yt-info">
+                <div id="ytName" class="yt-name">Loading...</div>
+                <div id="subCount" class="yt-subs">---</div>
+                <div style="font-size: 0.7rem; color: var(--muted);">SUBSCRIBERS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-plan" id="card-plan">
+        <div style="color:var(--green); font-weight:bold; margin-bottom:15px;"><i class="fas fa-lightbulb"></i> কনটেন্ট আইডিয়া</div>
+        <div class="planner-box">
+            <div class="star-input" id="starInput">
+                <i class="fas fa-star" onclick="setRating(1)"></i><i class="far fa-star" onclick="setRating(2)"></i><i class="far fa-star" onclick="setRating(3)"></i><i class="far fa-star" onclick="setRating(4)"></i><i class="far fa-star" onclick="setRating(5)"></i>
+            </div>
+            <input type="text" id="contentTitle" class="input-field" placeholder="টাইটেল লিখুন...">
+            <textarea id="contentDetail" class="detail-field" placeholder="বিস্তারিত এখানে লিখুন..."></textarea>
+            <div class="btn-group"><button class="btn btn-blue" id="mainBtn" onclick="handlePlanner()">Next</button></div>
+        </div>
+        <div id="contentList" style="margin-top:20px;"></div>
+        
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn" style="background:#21262d; color:white; flex:1;" onclick="exportData()"><i class="fas fa-download"></i> Backup</button>
+            <button class="btn" style="background:#21262d; color:white; flex:1;" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i> Restore</button>
+            <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+        </div>
+    </div>
+
+    <div class="card card-tools" id="card-tools">
+        <div style="color:var(--purple); font-weight:bold; margin-bottom:10px;"><i class="fas fa-tools"></i> YouTube Creator Toolkit</div>
+        <div class="section-title">AI & Scripting</div>
+        <div class="tool-grid">
+            <a href="https://chat.openai.com" target="_blank" class="tool-box"><i class="fas fa-robot" style="color:#10a37f"></i> ChatGPT</a>
+            <a href="https://gemini.google.com" target="_blank" class="tool-box"><i class="fas fa-brain" style="color:#4285f4"></i> Gemini AI</a>
+            <a href="https://trends.google.com" target="_blank" class="tool-box"><i class="fas fa-fire" style="color:#ea4335"></i> Trending</a>
+        </div>
+    </div>
+
+    <div class="card card-web" id="card-web">
+        <div style="color:var(--blue); font-weight:bold; margin-bottom:15px;"><i class="fas fa-link"></i> Smart Web Manager</div>
+        <div class="planner-box">
+            <input type="text" id="webUrlInput" class="input-field" placeholder="ওয়েবসাইট লিঙ্ক পেস্ট করুন">
+            <div class="btn-group">
+                <button class="btn btn-blue" id="addWebBtn" onclick="addWebLink()">Add Link</button>
+            </div>
+        </div>
+        <div id="webList" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<div class="settings-popup" id="settingsPopup">
+    <div class="popup-title">কাস্টোমাইজ সেটিংস</div>
+    <div class="toggle-row"><span>YouTube</span><label class="switch"><input type="checkbox" id="check-yt" checked onchange="updateView('card-yt', this.checked)"><span class="slider"></span></label></div>
+    <div class="toggle-row"><span>Idea</span><label class="switch"><input type="checkbox" id="check-plan" checked onchange="updateView('card-plan', this.checked)"><span class="slider"></span></label></div>
+    <div class="toggle-row"><span>Toolkit</span><label class="switch"><input type="checkbox" id="check-tools" checked onchange="updateView('card-tools', this.checked)"><span class="slider"></span></label></div>
+    <div class="toggle-row"><span>Web Manager</span><label class="switch"><input type="checkbox" id="check-web" checked onchange="updateView('card-web', this.checked)"><span class="slider"></span></label></div>
+    
+    <button class="btn" style="width:100%; margin-top:10px; background:#21262d; color:var(--blue);" onclick="toggleYTConfig()">API & Channel Config</button>
+    <button class="btn btn-blue" style="width:100%; margin-top:10px;" onclick="toggleSettings()">Save & Close</button>
+</div>
+
+<div class="modal" id="ytConfigModal" style="z-index: 2000;">
+    <div class="modal-content">
+        <div class="popup-title">YouTube Config</div>
+        <input type="password" id="inputApiKey" class="input-field" style="background:#0d1117; margin-bottom:10px;" placeholder="API Key">
+        <input type="text" id="inputChannelId" class="input-field" style="background:#0d1117; margin-bottom:20px;" placeholder="Channel ID">
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-blue" style="flex:1" onclick="saveYTConfig()">Save</button>
+            <button class="btn" style="background:var(--red); color:#fff; flex:1" onclick="toggleYTConfig()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <div id="modalTitle" style="font-size: 1.2rem; font-weight: bold; color: var(--blue); margin-bottom: 10px;"></div>
+        <div id="modalBody" style="line-height: 1.6; white-space: pre-wrap; color: #ccc;"></div>
+        <button class="btn btn-blue" style="width:100%; margin-top:20px;" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    let currentRating = 1; let editId = null; let step = 1; let webEditId = null;
+    let API_KEY = localStorage.getItem('km_api_key') || 'AIzaSyC-fx30U6157HGpTqtfCBu_hODdy7A-I_g'; 
+    let CHANNEL_ID = localStorage.getItem('km_channel_id') || 'UCC6yJ6zgy1h7OkghO43uf6w';
+
+    // UI Controls
+    function toggleSettings() {
+        const p = document.getElementById('settingsPopup');
+        p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        document.getElementById('mainContainer').classList.toggle('blur-bg');
+    }
+    function updateView(id, isVisible) {
+        document.getElementById(id).style.display = isVisible ? 'block' : 'none';
+        localStorage.setItem('view_' + id, isVisible);
+    }
+    function toggleYTConfig() {
+        const m = document.getElementById('ytConfigModal');
+        document.getElementById('inputApiKey').value = API_KEY;
+        document.getElementById('inputChannelId').value = CHANNEL_ID;
+        m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+    }
+    function saveYTConfig() {
+        API_KEY = document.getElementById('inputApiKey').value.trim();
+        CHANNEL_ID = document.getElementById('inputChannelId').value.trim();
+        localStorage.setItem('km_api_key', API_KEY);
+        localStorage.setItem('km_channel_id', CHANNEL_ID);
+        toggleYTConfig(); updateYouTubeStats();
+    }
+
+    // YT Stats
+    async function updateYouTubeStats() {
+        try {
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&id=${CHANNEL_ID}&key=${API_KEY}`);
+            const data = await res.json();
+            if (data.items[0]) {
+                const item = data.items[0];
+                document.getElementById('ytName').innerText = item.snippet.title;
+                document.getElementById('subCount').innerText = parseInt(item.statistics.subscriberCount).toLocaleString();
+                document.getElementById('ytPfp').src = item.snippet.thumbnails.default.url;
+            }
+        } catch (e) { document.getElementById('subCount').innerText = "Offline"; }
+    }
+
+    // Ideas
+    // --- STAR RATING FIXED LOGIC ---
+    function setRating(n) {
+        currentRating = n;
+        const stars = document.getElementById('starInput').children;
+        for(let i=0; i<5; i++) {
+            if (i < n) {
+                stars[i].classList.remove('far');
+                stars[i].classList.add('fas');
+            } else {
+                stars[i].classList.remove('fas');
+                stars[i].classList.add('far');
+            }
+        }
+    }
+    // -------------------------------
+
+    function handlePlanner() {
+        const title = document.getElementById('contentTitle');
+        const detail = document.getElementById('contentDetail');
+        if (step === 1) {
+            if (!title.value.trim()) return;
+            detail.style.display = 'block'; detail.focus();
+            document.getElementById('mainBtn').innerText = editId ? 'Update' : 'Save';
+            step = 2;
+        } else {
+            saveIdea(title.value, detail.value); resetForm();
+        }
+    }
+    function saveIdea(title, detail) {
+        let ideas = JSON.parse(localStorage.getItem('km_ideas') || '[]');
+        if (editId) {
+            ideas = ideas.map(i => i.id === editId ? { ...i, title, detail, rating: currentRating } : i);
+            editId = null;
+        } else {
+            ideas.push({ id: Date.now(), title, detail, rating: currentRating });
+        }
+        localStorage.setItem('km_ideas', JSON.stringify(ideas));
+        renderIdeas();
+    }
+    function renderIdeas() {
+        const list = document.getElementById('contentList'); list.innerHTML = '';
+        const ideas = JSON.parse(localStorage.getItem('km_ideas') || '[]');
+        ideas.reverse().forEach(idea => {
+            const div = document.createElement('div'); div.className = 'item';
+            // Star display added inside the list item for clarity
+            const starsHtml = '<div style="color:#ffd700; font-size:0.7rem; margin-top:5px;">' + '★'.repeat(idea.rating) + '</div>';
+            div.innerHTML = `<div style="display:flex; justify-content:space-between; padding:15px;"><div><div class="item-title">${idea.title}</div>${starsHtml}</div><div class="actions"><i class="fas fa-eye icon-btn" style="color:var(--green)" onclick="viewIdea(${idea.id})"></i><i class="fas fa-edit icon-btn" style="color:var(--blue)" onclick="editIdea(${idea.id})"></i><i class="fas fa-trash icon-btn" style="color:var(--red)" onclick="deleteIdea(${idea.id})"></i></div></div>`;
+            list.appendChild(div);
+        });
+    }
+    function editIdea(id) {
+        const idea = JSON.parse(localStorage.getItem('km_ideas')).find(i => i.id === id);
+        document.getElementById('contentTitle').value = idea.title;
+        document.getElementById('contentDetail').value = idea.detail;
+        setRating(idea.rating); editId = id; step = 1; handlePlanner();
+    }
+    function deleteIdea(id) {
+        if(confirm('Delete?')) {
+            let ideas = JSON.parse(localStorage.getItem('km_ideas')).filter(i => i.id !== id);
+            localStorage.setItem('km_ideas', JSON.stringify(ideas)); renderIdeas();
+        }
+    }
+
+    // Web Manager
+    async function addWebLink() {
+        let url = document.getElementById('webUrlInput').value.trim();
+        if (!url) return;
+        if (!url.startsWith('http')) url = 'https://' + url;
+        const domain = new URL(url).hostname;
+        let webs = JSON.parse(localStorage.getItem('km_webs') || '[]');
+        webs.push({ id: Date.now(), url, name: domain, logo: `https://www.google.com/s2/favicons?sz=64&domain=${domain}` });
+        localStorage.setItem('km_webs', JSON.stringify(webs));
+        document.getElementById('webUrlInput').value = '';
+        renderWebs();
+    }
+    function renderWebs() {
+        const list = document.getElementById('webList'); list.innerHTML = '';
+        const webs = JSON.parse(localStorage.getItem('km_webs') || '[]');
+        webs.forEach(web => {
+            const div = document.createElement('div'); div.className = 'web-item';
+            div.innerHTML = `<div style="display:flex; align-items:center; flex:1;" onclick="window.open('${web.url}', '_blank')"><img src="${web.logo}" class="web-logo"><span class="web-name">${web.name}</span></div><div class="web-actions"><i class="fas fa-copy icon-btn" onclick="event.stopPropagation(); copyText('${web.url}')"></i><i class="fas fa-trash icon-btn" style="color:var(--red)" onclick="event.stopPropagation(); deleteWeb(${web.id})"></i></div>`;
+            list.appendChild(div);
+        });
+    }
+    function deleteWeb(id) {
+        let webs = JSON.parse(localStorage.getItem('km_webs')).filter(w => w.id !== id);
+        localStorage.setItem('km_webs', JSON.stringify(webs)); renderWebs();
+    }
+
+    // Data Transfer (Backup/Restore)
+    function exportData() {
+        const data = { ideas: JSON.parse(localStorage.getItem('km_ideas') || '[]'), webs: JSON.parse(localStorage.getItem('km_webs') || '[]'), api: API_KEY, cid: CHANNEL_ID };
+        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'KrantiMatrix_Backup.json'; a.click();
+    }
+    function importData(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = JSON.parse(event.target.result);
+            localStorage.setItem('km_ideas', JSON.stringify(data.ideas || []));
+            localStorage.setItem('km_webs', JSON.stringify(data.webs || []));
+            if(data.api) localStorage.setItem('km_api_key', data.api);
+            if(data.cid) localStorage.setItem('km_channel_id', data.cid);
+            location.reload();
+        };
+        reader.readAsText(e.target.files[0]);
+    }
+
+    // Misc
+    function copyText(t) { navigator.clipboard.writeText(t); showToast("লিঙ্ক কপি হয়েছে!"); }
+    function showToast(m) { const t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(() => t.className = "", 3000); }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    function viewIdea(id) {
+        const idea = JSON.parse(localStorage.getItem('km_ideas')).find(i => i.id === id);
+        document.getElementById('modalTitle').innerText = idea.title;
+        document.getElementById('modalBody').innerText = idea.detail;
+        document.getElementById('modal').style.display = 'flex';
+    }
+    function resetForm() { document.getElementById('contentTitle').value = ''; document.getElementById('contentDetail').value = ''; document.getElementById('contentDetail').style.display = 'none'; document.getElementById('mainBtn').innerText = 'Next'; setRating(1); step = 1; }
+    function loadViewConfig() {
+        ['card-yt', 'card-plan', 'card-tools', 'card-web'].forEach(id => {
+            const s = localStorage.getItem('view_' + id);
+            if(s !== null) {
+                const v = s === 'true';
+                document.getElementById(id).style.display = v ? 'block' : 'none';
+                document.getElementById('check-' + id.split('-')[1]).checked = v;
+            }
+        });
+    }
+
+    setInterval(() => {
+        const n = new Date();
+        document.getElementById('clock').innerText = n.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('fullDate').innerText = n.toLocaleDateString('bn-BD', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }, 1000);
+
+    document.addEventListener('DOMContentLoaded', () => { renderIdeas(); renderWebs(); updateYouTubeStats(); loadViewConfig(); });
+</script>
+</body>
+</html>
