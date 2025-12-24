@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="og:image" content="https://i.ibb.co/3yPZ0Rmq/IMG-3336.png" />
+    <meta name="og:site_name" content="Wish_page" />
+    <meta name="og:description" content="Christmas" />
+    <title>Christmas Gift - Kranti Matrix</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; min-height: 100vh; overflow-x: hidden; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; color: #fff; }
+        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        .light-strip { position: fixed; top: 0; width: 100%; height: 20px; display: flex; justify-content: space-around; z-index: 1001; }
+        .light-bulb { width: 12px; height: 12px; border-radius: 50%; animation: flash 1s infinite alternate; }
+        @keyframes flash { 0% { opacity: 0.4; box-shadow: 0 0 2px white; } 100% { opacity: 1; box-shadow: 0 0 10px white; } }
+
+        /* এন্ট্রান্স কার্টেন */
+        #curtain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #b30000, #4a0000); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 1s; }
+        .name-input { padding: 15px; width: 280px; border-radius: 50px; border: none; margin-bottom: 20px; text-align: center; font-size: 1.1rem; outline: none; color: #333; }
+
+        /* মেইন স্টেজ */
+        .main-stage { text-align: center; padding: 40px 20px; width: 100%; max-width: 800px; z-index: 100; }
+        .tv-frame { width: 100%; max-width: 500px; margin: 20px auto; aspect-ratio: 16/9; background: #333; border-radius: 20px; padding: 10px; position: relative; box-shadow: 0 0 40px rgba(255, 0, 0, 0.5); border: 5px solid #444; animation: float 4s ease-in-out infinite; display: none; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .screen { width: 100%; height: 100%; background: #000; border-radius: 10px; overflow: hidden; }
+        
+        .curtain-image-box { width: 80%; max-width: 300px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 3px solid #ffcf00; }
+
+        /* Buttons */
+        .btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin: 10px 5px; text-decoration: none; display: inline-block; }
+        .open-btn { background: #ffcf00; color: #000; box-shadow: 0 5px 15px rgba(255, 207, 0, 0.4); }
+        .wa-btn { background: #25d366; color: #fff; font-size: 1.1rem; }
+        
+        /* Message Box */
+        .sender-message-box { background: rgba(255, 255, 255, 0.1); border-left: 5px solid #ffcf00; padding: 20px; margin: 20px auto; border-radius: 10px; max-width: 90%; backdrop-filter: blur(5px); display: none; text-align: left; }
+        .sender-label { color: #ffcf00; font-size: 0.9rem; font-weight: bold; }
+
+        /* Shiny Text */
+        .shiny-text { font-family: 'Mountains of Christmas', cursive; font-size: 3.5rem; color: #fff; animation: pulsate 1.5s infinite alternate; margin-bottom: 20px; }
+        @keyframes pulsate { 
+            0% { text-shadow: 0 0 10px #ffcf00; transform: scale(1); }
+            100% { text-shadow: 0 0 30px #ff0000, 0 0 50px #ffcf00; transform: scale(1.05); }
+        }
+
+        #sharePopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; padding: 25px; border-radius: 20px; z-index: 3000; border: 2px solid #ffcf00; width: 90%; max-width: 400px; text-align: center; }
+        .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2999; }
+        #sharePopup input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: #333; color: #fff; }
+
+        @media (max-width: 600px) { .shiny-text { font-size: 2.5rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="light-strip" id="lights"></div>
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="popup-overlay" id="overlay"></div>
+    <div id="sharePopup">
+        <h3 style="color:#ffcf00">শেয়ার সেটিংস 🎁</h3>
+        <input type="text" id="fromName" placeholder="আপনার নাম (Sender)">
+        <input type="text" id="toName" placeholder="বন্ধুর নাম (Receiver)">
+        <button class="btn wa-btn" onclick="finalShare()">হোয়াটসঅ্যাপে পাঠান <i class="fab fa-whatsapp"></i></button>
+        <button class="btn" onclick="closePopup()" style="background:#555; color:#fff;">বন্ধ করুন</button>
+    </div>
+
+    <div id="curtain">
+        <div class="curtain-image-box">
+            <img src="https://i.ibb.co/3yPZ0Rmq/IMG-3336.png" alt="Christmas" style="width: 100%; display: block;">
+        </div>
+        <h2 id="curtainTitle" style="padding: 0 20px; margin-bottom: 20px;">🎄 Kranti Matrix 🎄<br>আপনার জন্য একটি বিশেষ উপহার আছে!</h2>
+        <input type="text" id="userInput" class="name-input" placeholder="আপনার নাম লিখুন...">
+        <button class="btn open-btn" onclick="startExperience()">উপহারটি দেখুন 🎁</button>
+    </div>
+
+    <div class="main-stage">
+        <h1 class="shiny-text">Merry Christmas</h1>
+        
+        <div id="senderNameDisplay" class="sender-message-box">
+            <span class="sender-label">To: <span id="toNameDisplay" style="color:#fff">প্রিয়</span></span>
+            <h3 id="nameText" style="color:#ffff66; font-size: 1.8rem; margin: 5px 0;"></h3>
+            <p style="color: #ddd; line-height: 1.5;">“এই উৎসবটি তোমার হৃদয়ে ভালোবাসা বয়ে আনুক এবং আগামী বছরটি নিরাপদে কাটুক। শুভ বড়দিন! ❄️🎁🎄”</p>
+        </div>
+
+        <div class="tv-frame" id="imageFrame">
+            <div class="screen">
+                <img src="https://krantimatrix.pages.dev/IMG_3324.jpeg" alt="Wish Image" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+
+        <button class="btn wa-btn" onclick="openSharePopup()">🚀 বন্ধুদের সারপ্রাইজ দিন</button>
+        <a href="https://www.effectivegatecpm.com/t6q61drxs?key=336d5cf1c7cfcac820ee9dbbb642adae" class="btn" style="background: #ffcf00; color: #000;">আরো ম্যাসেজ দেখুন</a>
+
+        <div class="social-links" style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+            <a href="https://facebook.com/kranti.matrix" target="_blank" style="color:#fff; font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+            <a href="https://instagram.com/kranti.matrix" target="_blank" style="color:#fff; font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+
+    <audio id="customAudio" loop preload="auto">
+        <source src="https://krantimatrix.pages.dev/63vwu-l69ia.ogg" type="audio/ogg">
+    </audio>
+
+    <script>
+        // স্নো এবং লাইট
+        const lightStrip = document.getElementById('lights');
+        const colors = ['#ff0000', '#00ff00', '#ffcf00', '#0000ff'];
+        for(let i=0; i<30; i++) {
+            let bulb = document.createElement('div');
+            bulb.className = 'light-bulb';
+            bulb.style.background = colors[i % colors.length];
+            bulb.style.animationDelay = (Math.random() * 2) + 's';
+            lightStrip.appendChild(bulb);
+        }
+
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function init() {
+            width = window.innerWidth; height = window.innerHeight;
+            canvas.width = width; canvas.height = height;
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({ x: Math.random() * width, y: Math.random() * height, size: Math.random() * 3 + 1, speed: Math.random() * 1.5 + 0.5 });
+            }
+        }
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "white";
+            for (let p of particles) {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+                p.y += p.speed; if(p.y > height) p.y = -10;
+            }
+            requestAnimationFrame(draw);
+        }
+
+        // ইউআরএল চেক
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            const n = params.get('n');
+            const t = params.get('t');
+            if(n) {
+                document.getElementById('curtainTitle').innerHTML = `🎄 <span style="color:#ffcf00">${decodeURIComponent(n)}</span> আপনার জন্য একটি বিশেষ উপহার পাঠিয়েছে! 🎄`;
+            }
+        };
+
+        function startExperience() {
+            const name = document.getElementById('userInput').value.trim();
+            if(!name) { alert("দয়া করে আপনার নাম লিখুন!"); return; }
+
+            const params = new URLSearchParams(window.location.search);
+            document.getElementById('nameText').innerText = name;
+            document.getElementById('toNameDisplay').innerText = params.get('t') ? decodeURIComponent(params.get('t')) : "প্রিয় বন্ধু";
+            
+            gsap.to("#curtain", { y: "-100%", duration: 1.2, ease: "power4.inOut", onComplete: () => {
+                document.getElementById('curtain').style.display = 'none';
+                document.getElementById('senderNameDisplay').style.display = 'block';
+                document.getElementById('imageFrame').style.display = 'block';
+            }});
+
+            document.getElementById('customAudio').play().catch(() => console.log("Audio play blocked by browser"));
+        }
+
+        function openSharePopup() { 
+            document.getElementById('sharePopup').style.display = 'block'; 
+            document.getElementById('overlay').style.display = 'block'; 
+        }
+        function closePopup() { 
+            document.getElementById('sharePopup').style.display = 'none'; 
+            document.getElementById('overlay').style.display = 'none'; 
+        }
+
+        function finalShare() {
+            const from = document.getElementById('fromName').value || "Kranti Matrix";
+            const to = document.getElementById('toName').value || "বন্ধু";
+            const url = window.location.origin + window.location.pathname + `?n=${encodeURIComponent(from)}&t=${encodeURIComponent(to)}`;
+            const text = `🎄 *${to}*, আপনার জন্য একটি বিশেষ জাদুকরী সারপ্রাইজ! 🎁\nদেখতে লিঙ্কে ক্লিক করুন: ${url}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.addEventListener('resize', init);
+        init(); draw();
+    </script>
+</body>
+</html>
