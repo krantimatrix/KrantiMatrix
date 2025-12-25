@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kranti Matrix - Pro Instagram Tag Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --insta-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            --primary-bg: #f3f4f6;
+            --text-color: #262626;
+        }
+        
+        body { 
+            font-family: 'Poppins', 'Segoe UI', sans-serif; 
+            background: var(--primary-bg); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh;
+            margin: 0; 
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+
+        .container, .tips-container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 480px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+            text-align: center;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        h2 { 
+            background: var(--insta-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .sub-text {
+            color: #8e8e8e;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .input-box { 
+            display: flex; 
+            flex-direction: column;
+            gap: 12px; 
+        }
+
+        input { 
+            padding: 16px; 
+            border: 2px solid #efefef; 
+            border-radius: 14px; 
+            outline: none; 
+            font-size: 16px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        input:focus { border-color: #dc2743; }
+
+        button.search-btn { 
+            background: var(--insta-gradient); 
+            color: white; 
+            border: none; 
+            padding: 16px; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 16px;
+        }
+
+        /* Tips Section Styling - Enhanced for Readability */
+        .tips-container {
+            text-align: left;
+        }
+
+        .tips-title { 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: #262626; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .tip-item { 
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 15px; 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            display: flex; 
+            gap: 12px; 
+            border: 1px solid #f0f0f0;
+            transition: 0.3s;
+        }
+
+        .tip-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .tip-number {
+            background: var(--insta-gradient);
+            color: white;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .tip-content b { color: #dc2743; display: block; margin-bottom: 2px; }
+
+        .unlock-btn {
+            background: white; color: #dc2743; border: 2px solid #dc2743;
+            padding: 14px 30px; border-radius: 50px; font-weight: 600;
+            cursor: pointer; margin-bottom: 20px; transition: 0.3s; width: 100%; max-width: 480px;
+        }
+
+        /* Result Area */
+        #result-area { display: none; margin-top: 25px; }
+        .tag-box { 
+            background: #f8fbff; border: 1px solid #e1e8ed; 
+            padding: 15px; border-radius: 12px; font-size: 14px; 
+            color: #00376b; word-wrap: break-word; text-align: left;
+        }
+
+        #loader { display: none; margin: 20px 0; color: #cc2366; font-weight: 600; }
+
+        .footer-note { font-size: 11px; color: #bfbfbf; text-align: center; margin-top: 10px; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 999;
+        }
+        .modal-box {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            background: white; width: 90%; max-width: 400px; padding: 25px;
+            border-radius: 24px; z-index: 1000; opacity: 0; transition: 0.3s;
+        }
+        .modal-box.active { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+
+        /* Responsive Fix for small screens */
+        @media (max-width: 400px) {
+            h2 { font-size: 24px; }
+            .container, .tips-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kranti Matrix</h2>
+    <p class="sub-text">AI Powered Instagram Tag Finder</p>
+    
+    <div class="input-box">
+        <input type="text" id="keyword" placeholder="উদা: Fashion, Travel, Gym">
+        <button class="search-btn" onclick="getRealTags()">Generate Viral Tags</button>
+    </div>
+
+    <div id="loader">🔎 Searching Real-time Trends...</div>
+
+    <div id="result-area">
+        <div class="tag-box" id="tagList"></div>
+        <button class="btn-copy" onclick="copyTags()" style="width:100%; background:#262626; color:white; border:none; padding:12px; border-radius:10px; margin-top:10px; cursor:pointer;">Copy to Clipboard</button>
+    </div>
+    <div class="footer-note">Powered by Kranti Matrix © 2025</div>
+</div>
+
+<button class="unlock-btn" onclick="toggleModal(true)">🔓 Unlock Secret Viral Tricks</button>
+
+<div class="tips-container">
+    <div class="tips-title">🚀 Reel ভাইরাল করার ৫টি গোপন টিপস</div>
+    
+    <div class="tip-item">
+        <div class="tip-number">১</div>
+        <div class="tip-content"><b>শক্তিশালী Hook:</b> ভিডিওর প্রথম ৩ সেকেন্ডে এমন কিছু দেখান বা বলুন যাতে দর্শক স্ক্রোল করা বন্ধ করে দেয়।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">২</div>
+        <div class="tip-content"><b>ট্রেন্ডিং অডিও:</b> মিউজিক লাইব্রেরি থেকে 'Rising Arrow' আইকনযুক্ত অডিওগুলো ব্যবহার করুন।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">৩</div>
+        <div class="tip-content"><b>হাই কোয়ালিটি:</b> ভিডিওর সেটিংস থেকে 'Upload at highest quality' অপশনটি চালু রাখুন।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">৪</div>
+        <div class="tip-content"><b>ক্যাপশন ট্রিক:</b> ক্যাপশনে দর্শকদের মতামত জানতে প্রশ্ন করুন, এতে এনগেজমেন্ট বাড়ে।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">৫</div>
+        <div class="tip-content"><b>সঠিক সময়:</b> আপনার অডিয়েন্স যখন সবচেয়ে বেশি একটিভ থাকে তখন পোস্ট করুন।</div>
+    </div>
+    
+    <div class="footer-note" style="text-align: left;">Trust Level: 99.9% | Kranti Matrix</div>
+</div>
+
+<div class="modal-overlay" id="overlay" onclick="toggleModal(false)"></div>
+<div class="modal-box" id="modal">
+    <h3 style="margin-top:0;">💎 এক্সপার্ট বোনাস টিপস</h3>
+    <p style="font-size:14px; line-height:1.6; color:#444;">১. লুপ ভিডিও তৈরি করুন যা বারবার দেখা যায়।<br>২. কভার ইমেজে আকর্ষণীয় টেক্সট যোগ করুন।</p>
+    <button onclick="toggleModal(false)" style="width:100%; background:var(--insta-gradient); color:white; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:600;">বুঝেছি, ধন্যবাদ!</button>
+</div>
+
+<script>
+async function getRealTags() {
+    const input = document.getElementById('keyword').value;
+    const loader = document.getElementById('loader');
+    const resultArea = document.getElementById('result-area');
+    const tagList = document.getElementById('tagList');
+
+    if(!input) return alert("Please enter a keyword");
+
+    loader.style.display = "block";
+    resultArea.style.display = "none";
+
+    try {
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.best-hashtags.com/hashtag/' + input.toLowerCase())}`);
+        const data = await response.json();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, 'text/html');
+        const tags = doc.querySelector('.tag-box')?.innerText || "";
+
+        if(tags.length > 10) {
+            tagList.innerText = tags.split(' ').slice(0, 30).join(' ');
+            loader.style.display = "none";
+            resultArea.style.display = "block";
+        } else {
+            alert("No tags found. Try another keyword.");
+            loader.style.display = "none";
+        }
+    } catch (error) {
+        alert("Connection Error!");
+        loader.style.display = "none";
+    }
+}
+
+function copyTags() {
+    const text = document.getElementById('tagList').innerText;
+    navigator.clipboard.writeText(text);
+    alert("Hashtags Copied!");
+}
+
+function toggleModal(show) {
+    const modal = document.getElementById('modal');
+    const overlay = document.getElementById('overlay');
+    if(show) {
+        overlay.style.display = 'block';
+        setTimeout(() => modal.classList.add('active'), 10);
+    } else {
+        modal.classList.remove('active');
+        setTimeout(() => overlay.style.display = 'none', 300);
+    }
+}
+</script>
+
+</body>
+</html>
