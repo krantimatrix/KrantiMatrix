@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kranti Matrix - YouTube Tag Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --yt-red: #FF0000;
+            --yt-dark: #212121;
+            --primary-bg: #f9f9f9;
+        }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--primary-bg); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh;
+            margin: 0; 
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+
+        .container, .tips-container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 480px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+            text-align: center;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        h2 { 
+            color: var(--yt-red);
+            font-size: 28px;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .sub-text { color: #606060; font-size: 14px; margin-bottom: 25px; }
+
+        .input-box { display: flex; flex-direction: column; gap: 12px; }
+
+        input { 
+            padding: 16px; border: 2px solid #e5e5e5; border-radius: 14px; 
+            outline: none; font-size: 16px; text-align: center;
+        }
+
+        input:focus { border-color: var(--yt-red); }
+
+        button.search-btn { 
+            background: var(--yt-red); color: white; border: none; 
+            padding: 16px; border-radius: 14px; cursor: pointer; 
+            font-weight: 600; font-size: 16px;
+        }
+
+        /* Result Area */
+        #result-area { display: none; margin-top: 25px; }
+        .tag-box { 
+            background: #fffafa; border: 1px solid #ffebeb; 
+            padding: 15px; border-radius: 12px; font-size: 14px; 
+            color: #c4302b; word-wrap: break-word; text-align: left;
+            line-height: 1.8;
+        }
+
+        /* Tips Styling */
+        .tips-title { font-size: 19px; font-weight: 600; margin-bottom: 20px; text-align: left; color: var(--yt-dark); display: flex; align-items: center; gap: 8px; }
+        .tip-item { background: #fdfdfd; padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; gap: 12px; border: 1px solid #f1f1f1; text-align: left; }
+        .tip-number { background: var(--yt-red); color: white; min-width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; }
+        .tip-content b { color: var(--yt-red); }
+
+        #loader { display: none; margin: 20px 0; color: var(--yt-red); font-weight: 600; }
+        .footer-note { font-size: 11px; color: #aaa; margin-top: 10px; }
+
+        @media (max-width: 400px) { .container, .tips-container { padding: 20px; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kranti Matrix</h2>
+    <p class="sub-text">YouTube SEO & Hashtag Generator</p>
+    
+    <div class="input-box">
+        <input type="text" id="keyword" placeholder="ভিডিওর বিষয় লিখুন (উদা: Cooking)">
+        <button class="search-btn" onclick="getYouTubeTags()">Generate YT Hashtags</button>
+    </div>
+
+    <div id="loader">🔎 Analyzing YouTube Trends...</div>
+
+    <div id="result-area">
+        <div class="tag-box" id="tagList"></div>
+        <button onclick="copyTags()" style="width:100%; background:var(--yt-dark); color:white; border:none; padding:12px; border-radius:10px; margin-top:10px; cursor:pointer; font-weight:600;">Copy Hashtags</button>
+    </div>
+    <div class="footer-note">Powered by Kranti Matrix © 2025</div>
+</div>
+
+<div class="tips-container">
+    <div class="tips-title">🎥 ভিডিও ভাইরাল করার YT টিপস</div>
+    
+    <div class="tip-item">
+        <div class="tip-number">১</div>
+        <div class="tip-content"><b>Title & Thumbnail:</b> থাম্বনেইল এমন করুন যাতে মানুষ ক্লিক করতে বাধ্য হয় (Click-bait নয়, Eye-catching)।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">২</div>
+        <div class="tip-content"><b>প্রথম ৩০ সেকেন্ড:</b> ইউটিউবে 'Audience Retention' খুব জরুরি। ভিডিওর শুরুতে মূল আকর্ষণ তুলে ধরুন।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">৩</div>
+        <div class="tip-content"><b>Hashtag নিয়ম:</b> ডেসক্রিপশনে ১৫টির বেশি হ্যাশট্যাগ দেবেন না। সেরা ৩-৫টি ট্যাগই যথেষ্ট।</div>
+    </div>
+
+    <div class="tip-item">
+        <div class="tip-number">৪</div>
+        <div class="tip-content"><b>Shorts Trick:</b> যদি শর্টস আপলোড করেন, তবে অবশ্যই #Shorts এবং #Viral ট্যাগ ব্যবহার করুন।</div>
+    </div>
+</div>
+
+<script>
+async function getYouTubeTags() {
+    const input = document.getElementById('keyword').value;
+    const loader = document.getElementById('loader');
+    const resultArea = document.getElementById('result-area');
+    const tagList = document.getElementById('tagList');
+
+    if(!input) return alert("দয়া করে একটি কিওয়ার্ড দিন");
+
+    loader.style.display = "block";
+    resultArea.style.display = "none";
+
+    try {
+        // ইউটিউব স্পেসিফিক হ্যাশট্যাগ খোঁজার জন্য এপিআই কল
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.best-hashtags.com/hashtag/' + input.toLowerCase())}`);
+        const data = await response.json();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, 'text/html');
+        const tags = doc.querySelector('.tag-box')?.innerText || "";
+
+        if(tags.length > 10) {
+            // ইউটিউবের জন্য আমরা ট্যাগ সংখ্যা ৩০ থেকে কমিয়ে ১৫টি করছি (বেস্ট প্র্যাকটিস)
+            let tagArray = tags.split(' ');
+            tagList.innerText = tagArray.slice(0, 15).join(' ');
+            loader.style.display = "none";
+            resultArea.style.display = "block";
+        } else {
+            alert("কোনো ট্যাগ পাওয়া যায়নি। অন্য কিওয়ার্ড ট্রাই করুন।");
+            loader.style.display = "none";
+        }
+    } catch (error) {
+        alert("সার্ভার সমস্যা! আবার চেষ্টা করুন।");
+        loader.style.display = "none";
+    }
+}
+
+function copyTags() {
+    const text = document.getElementById('tagList').innerText;
+    navigator.clipboard.writeText(text);
+    alert("Hashtags Copied for YouTube!");
+}
+</script>
+
+</body>
+</html>
