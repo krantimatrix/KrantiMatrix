@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kranti Matrix Live</title>
+    <style>
+        :root {
+            --ios-blue: #0A84FF;
+            --ios-blur: saturate(180%) blur(25px);
+        }
+
+        body {
+            background: #000;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* হেডার */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: var(--ios-blur);
+            -webkit-backdrop-filter: var(--ios-blur);
+            padding: env(safe-area-inset-top, 20px) 20px 15px;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        .logo span { color: var(--ios-blue); text-transform: uppercase; }
+
+        /* লাইভ টিভি ব্যানার */
+        .live-tv-banner-container {
+            margin-top: calc(90px + env(safe-area-inset-top, 20px));
+            padding: 0 20px;
+        }
+
+        .live-tv-hero {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #111;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
+
+        .live-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #FF3B30;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 900;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: #fff;
+            border-radius: 50%;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .center-play-btn {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .play-icon-bg {
+            width: 65px;
+            height: 65px;
+            background: var(--ios-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.4);
+        }
+
+        /* প্লেয়ার ওভারলে */
+        #player-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* টিভির চ্যানেল লোগো (ডান দিকে - লোগো ঢাকার জন্য) */
+        .tv-logo {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 3000;
+            pointer-events: none;
+        }
+
+        .tv-logo img {
+            width: 60px;
+            filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
+            opacity: 0.9;
+        }
+
+        #live-video {
+            width: 100%;
+            height: auto;
+            max-height: 100vh;
+            pointer-events: none !important; /* ভিডিও টানা বন্ধ */
+        }
+
+        /* সব কন্ট্রোল হাইড করা */
+        video::-webkit-media-controls { display: none !important; }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 3001;
+        }
+
+        .loader {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--ios-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">KRANTI <span>MATRIX</span></div>
+    </header>
+
+    <div class="live-tv-banner-container">
+        <div class="live-tv-hero" onclick="playLive()">
+            <div class="live-tag"><span class="dot"></span> LIVE</div>
+            <img src="https://i.postimg.cc/c1Rj1xbK/IMG_3336.png" class="hero-poster" id="banner-img">
+            <div class="center-play-btn">
+                <div class="play-icon-bg"><span style="color:white; font-size:25px; margin-left:4px;">▶</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="player-overlay">
+        <div class="close-btn" onclick="closePlayer()">×</div>
+        
+        <div class="tv-logo">
+            <img src="https://i.postimg.cc/c1Rj1xbK/IMG_3336.png" alt="Logo">
+        </div>
+
+        <div id="loading" class="loader">
+            <div class="spinner"></div>
+            <div style="font-size:12px;">Connecting Kranti Matrix Live...</div>
+        </div>
+
+        <video id="live-video" playsinline disablePictureInPicture></video>
+    </div>
+
+    <script>
+        // আপনার লাইভ শিডিউল ডাটা
+        const schedule = [
+            {
+                startTime: "00:00",
+                endTime: "23:59",
+                url: "https://archive.org/download/ical-capcut/11.%207190887293861858562.mp4",
+                poster: "https://i.postimg.cc/c1Rj1xbK/IMG_3336.png"
+            }
+        ];
+
+        const video = document.getElementById('live-video');
+        const overlay = document.getElementById('player-overlay');
+        const loader = document.getElementById('loading');
+
+        function playLive() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            const current = schedule.find(s => timeStr >= s.startTime && timeStr <= s.endTime);
+
+            if (current) {
+                overlay.style.display = 'flex';
+                loader.style.display = 'flex';
+                video.src = current.url;
+                video.load();
+
+                // টাইম সিঙ্কিং লজিক
+                const startParts = current.startTime.split(':');
+                const startDate = new Date();
+                startDate.setHours(startParts[0], startParts[1], 0);
+                const diff = Math.floor((now - startDate) / 1000);
+
+                video.onloadedmetadata = function() {
+                    if (diff > 0 && diff < video.duration) {
+                        video.currentTime = diff;
+                    }
+                    loader.style.display = 'none';
+                    video.play().catch(() => {
+                        video.muted = true;
+                        video.play();
+                    });
+                };
+            }
+        }
+
+        // সিকিং (টানাটানি) পুরোপুরি ব্লক করার লজিক
+        video.addEventListener('seeking', function() {
+            if (video.currentTime !== video.lastTime) {
+                video.currentTime = video.lastTime;
+            }
+        });
+
+        video.addEventListener('timeupdate', function() {
+            if (!video.seeking) {
+                video.lastTime = video.currentTime;
+            }
+        });
+
+        function closePlayer() {
+            overlay.style.display = 'none';
+            video.pause();
+            video.src = "";
+            document.body.style.overflow = 'auto';
+        }
+
+        // রাইট ক্লিক বন্ধ
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+</body>
+</html>
