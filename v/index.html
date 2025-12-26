@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kranti Matrix Live</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">KRANTI <span>MATRIX</span></div>
+    </header>
+
+    <div class="live-tv-banner-container">
+        <div class="live-tv-hero" onclick="playLive()">
+            <div class="live-tag"><span class="dot"></span> LIVE</div>
+            <img src="https://i.postimg.cc/c1Rj1xbK/IMG_336.png" class="hero-poster" id="banner-img">
+            <div class="center-play-btn">
+                <div class="play-icon-bg"><span style="color:white; font-size:25px; margin-left:4px;">▶</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="player-overlay">
+        <div class="close-btn" onclick="closePlayer()">×</div>
+        
+        <div class="tv-logo">
+            <img src="https://i.postimg.cc/c1Rj1xbK/IMG_3336.png" alt="Logo">
+        </div>
+
+        <div id="loading" class="loader">
+            <div class="spinner"></div>
+            <div style="font-size:12px;">Connecting Kranti Matrix Live...</div>
+        </div>
+
+        <video id="live-video" playsinline disablePictureInPicture></video>
+    </div>
+
+    <script src="liveTvSchedule.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
