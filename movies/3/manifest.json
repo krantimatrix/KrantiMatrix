@@ -1,0 +1,20 @@
+{
+  "short_name": "KrantiMatrix",
+  "name": "Kranti Matrix - 4K Movies",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/c1Rj1xbK/IMG_3336.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.postimg.cc/c1Rj1xbK/IMG_3336.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#007aff",
+  "background_color": "#000000"
+}
