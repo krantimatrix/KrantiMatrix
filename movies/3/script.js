@@ -310,7 +310,7 @@ window.addEventListener('DOMContentLoaded', checkIfInstalled);
 // --- অনলাইন ডেটা লোড করার অ্যাডিশনাল লজিক ---
 
 // ১. আপনার অনলাইন JSON লিংকটি এখানে বসান
-const EXTERNAL_DATA_URL = "https://krantibeats.page.gd/data.js"; 
+const EXTERNAL_DATA_URL = "https://krantibeats.page.gd/data3.js"; 
 
 // ২. movies ভেরিয়েবলটি গ্লোবাল হিসেবে রাখা হলো (যাতে আগের সব ফাংশন একে পায়)
 var movies = []; 
