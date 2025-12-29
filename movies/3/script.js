@@ -1,3 +1,7 @@
+// ১. শুরুতে ডাটা এবং স্ট্যাটাস সেটআপ
+let movies = []; 
+const DATA_URL = "https://krantibeats.page.gd/data.js"; 
+
 // --- বিজ্ঞাপন এবং প্লেয়ার লজিক (আপনার অরিজিনাল কোড) ---
 const VAST_TAG_URL = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319475/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
 const AD_URL = "https://archive.org/download/ical-capcut/11.%207190887293861858562.mp4"; 
