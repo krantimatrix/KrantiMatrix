@@ -1,7 +1,3 @@
-// ১. শুরুতে ডাটা এবং স্ট্যাটাস সেটআপ
-let movies = []; 
-const DATA_URL = "https://krantibeats.page.gd/data.js"; 
-
 // --- বিজ্ঞাপন এবং প্লেয়ার লজিক (আপনার অরিজিনাল কোড) ---
 const VAST_TAG_URL = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319475/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
 const AD_URL = "https://archive.org/download/ical-capcut/11.%207190887293861858562.mp4"; 
@@ -311,3 +307,44 @@ function checkIfInstalled() {
 
 // এই ফাংশনটি init() এর ভেতরে কল করে দিন
 window.addEventListener('DOMContentLoaded', checkIfInstalled);
+// --- অনলাইন ডেটা লোড করার অ্যাডিশনাল লজিক ---
+
+// ১. আপনার অনলাইন JSON লিংকটি এখানে বসান
+const EXTERNAL_DATA_URL = "https://krantibeats.page.gd/data.js"; 
+
+// ২. movies ভেরিয়েবলটি গ্লোবাল হিসেবে রাখা হলো (যাতে আগের সব ফাংশন একে পায়)
+var movies = []; 
+
+async function loadOnlineData() {
+    try {
+        const response = await fetch(EXTERNAL_DATA_URL);
+        if (!response.ok) throw new Error("Data fetch failed");
+        
+        // ডেটা লোড করে মুভিস ভেরিয়েবলে রাখা
+        movies = await response.json(); 
+        
+        // ৩. ডেটা আসার পর আপনার আগের ফাংশনগুলো রান করা
+        init(); 
+        checkIfInstalled();
+        
+        // ৪. URL এ আইডি থাকলে ডিটেইলস ওপেন করা
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get('id');
+        if (movieId) {
+            openDetails(parseInt(movieId));
+        }
+        
+    } catch (error) {
+        console.error("Error loading movies:", error);
+        const grid = document.getElementById('movie-grid');
+        if(grid) {
+            grid.innerHTML = `<p style="color:white;text-align:center;padding:50px;">ডেটা লোড করা সম্ভব হয়নি। লিংকটি চেক করুন।</p>`;
+        }
+    }
+}
+
+// আপনার অরিজিনাল কোডের শেষে থাকা init(); এবং window.onload এর পরিবর্তে এটি কল করুন
+loadOnlineData();
+
+
+
